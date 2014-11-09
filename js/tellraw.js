@@ -26,7 +26,9 @@ function reportAnIssue() {
 	var title = "";
 	var body = "";
 	if (issueLog.length > 0) {
-		title = "Issue Report - " + issueLog[issueLog.length - 1].name;
+		if (issueLog[issueLog.length - 1].name != "Log") {
+			title = "Issue Report - " + issueLog[issueLog.length - 1].name;
+		}
 		body = 'Please enter steps to reproduce the issue below, as well as any other information you want to include%0A%0A%0A%0A%0A%0A Provided Data - Do not modify below this line%0A%0A```%0A' + JSON.stringify(issueLog) + '%0A```';
 	}
 	var win = window.open('http://github.com/ezfe/tellraw/issues/new?body=' + body + '&title=' + title, '_blank');
@@ -735,6 +737,13 @@ function deleteJObjectSave(saveName) {
 	refreshSavesList();
 }
 function refreshOutput(input) {
+	// TODO
+	var toLog = {"jobject":jobject,"template":localStorage.getItem('jtemplate')};
+	if (issueLog.length > 0) {
+		if (JSON.stringify(issueLog[0]) != JSON.stringify(toLog)) {
+			logIssue("Log",{"jobject":jobject,"template":localStorage.getItem('jtemplate')});
+		}
+	}
 	try {
 		/*VERIFY CONTENTS*/
 		jobject = verify_jobject_format(jobject);
@@ -1069,7 +1078,7 @@ function jsonParse() {
 				var clickEventType = "";
 				var clickEventValue = "";
 				$('#jsonPreview').append('<span id="jsonPreviewSpanElement'+ i +'"></span>');
-				
+
 				if (jobject[i].text) {
 					$('#jsonPreviewSpanElement'+i).html(jobject[i].text.replace(/\\\\n/g,'<br>').replace(/\\n/g,'<br>'));
 				} else if (jobject[i].score) {
